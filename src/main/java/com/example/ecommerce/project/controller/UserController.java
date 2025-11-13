@@ -10,12 +10,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/users")
+@RequestMapping("/api")
 public class UserController {
     private  final UserService userService;
 
@@ -33,12 +34,14 @@ public class UserController {
         response.setId(currentUser.getId());
         response.setEmail(currentUser.getEmail());
         response.setUsername(currentUser.getUsername());
+        response.setDeliveryAddress(currentUser.getDeliveryAddress());
+        response.setProfileImage(currentUser.getProfileImage());
         return ResponseEntity.ok(response);
 
     }
 
 
-    @GetMapping("/all")
+    @GetMapping("/all-users")
     public ResponseEntity<List<UserDto>> allUsers(){
         List<UserDto> users = userService.allUsers().stream().map((user)-> {
             UserDto dto = new UserDto();
@@ -50,13 +53,14 @@ public class UserController {
         return ResponseEntity.ok(users);
     }
 
-    @PutMapping("/update-user")
-    public ResponseEntity<?> updateUser (@Valid @RequestBody UpdateUserDto input){
+    @PutMapping(value = "/update-user", consumes = {"multipart/form-data"})
+    public ResponseEntity<?> updateUser ( @RequestPart(value = "data", required = false) UpdateUserDto input, @RequestPart(value = "image", required = false)MultipartFile image){
         User principal = (User) userService.getSignedInUser();
         String Id = principal.getId();
 
         try{
-            User currentUser = userService.updateUserDetails(Id, input);
+
+            User currentUser = userService.updateUserDetails(Id, input, image);
 
             return ResponseEntity.ok("Updated Successfully");
 

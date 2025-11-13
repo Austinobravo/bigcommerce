@@ -9,5 +9,7 @@ public class UserDto {
     private String email;
     private String id;
     private String username;
+    private String profileImage;
+    private String deliveryAddress;
 
 }

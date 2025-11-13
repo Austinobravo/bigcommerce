@@ -32,7 +32,14 @@ public class AuthenticationService {
     }
 
     public User signup(RegisterUserDto input){
-        User user = new User(input.getUsername(), input.getEmail(), passwordEncoder.encode(input.getPassword()));
+        Optional<User> existingEmail = userRepository.findUserByEmail(input.getEmail().toLowerCase());
+        Optional<User> existingUsername = userRepository.findUserByEmail(input.getUsername().toLowerCase());
+        if(existingEmail.isPresent() || existingUsername.isPresent()){
+            throw new RuntimeException("This user already exists");
+        }
+
+        User user = new User(input.getUsername().toLowerCase(), input.getEmail().toLowerCase(), passwordEncoder.encode(input.getPassword()), input.getDeliveryAddress(), input.getProfileImage());
+
         user.setVerificationCode(generateVerificationCode());
         user.setVerificationExpiresAt(LocalDateTime.now().plusMinutes(15));
         user.setEnabled(false);
@@ -42,18 +49,18 @@ public class AuthenticationService {
     }
 
     public User authenticate(LoginUserDto input){
-        User user = userRepository.findUserByEmail(input.getEmail()).orElseThrow(()-> new RuntimeException("User not found"));
+        User user = userRepository.findUserByEmail(input.getEmail().toLowerCase()).orElseThrow(()-> new RuntimeException("User not found"));
 
         if(!user.isEnabled()) {
             throw new RuntimeException("Account not verified");
         }
 
-        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(input.getEmail(), input.getPassword()));
+        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(input.getEmail().toLowerCase(), input.getPassword()));
         return user;
         }
 
     public void verifyUser(VerifyUserDto input){
-        Optional <User> optionalUser = userRepository.findUserByEmail(input.getEmail());
+        Optional <User> optionalUser = userRepository.findUserByEmail(input.getEmail().toLowerCase());
         if(optionalUser.isPresent()) {
             User user = optionalUser.get();
             if(user.getVerificationExpiresAt().isBefore(LocalDateTime.now())) {
@@ -76,10 +83,10 @@ public class AuthenticationService {
     }
 
     public void resendVerificationCode(String email){
-        Optional<User> optionalUser = userRepository.findUserByEmail(email);
+        Optional<User> optionalUser = userRepository.findUserByEmail(email.toLowerCase());
         if(optionalUser.isPresent()){
             User user = optionalUser.get();
-            if(!user.isEnabled()){
+            if(user.isEnabled()){
                 throw new RuntimeException("Account already verified");
             }else{
                 user.setVerificationCode(generateVerificationCode());
@@ -97,7 +104,8 @@ public class AuthenticationService {
         String subject = "Account verification";
         Map<String, Object> variables = Map.of(
                 "username", user.getUsername(),
-                "verificationCode", user.getVerificationCode()
+                "verificationCode", user.getVerificationCode(),
+                "verificationLink", "http://localhost:3000/verify-email?email="+user.getEmail()
         );
         String verificationCode = user.getVerificationCode();
         try{

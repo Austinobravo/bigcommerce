@@ -9,7 +9,5 @@ import lombok.Setter;
 @Getter
 public class UpdateUserDto {
 
-    @Size(min = 6, message = "Password must be at least six characters")
-    @NotBlank(message = "Password is required")
     private String password;
 }

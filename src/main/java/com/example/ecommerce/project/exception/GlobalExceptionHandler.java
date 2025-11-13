@@ -30,7 +30,7 @@ public class GlobalExceptionHandler {
 
         response.put("timestamp", LocalDateTime.now());
         response.put("status", HttpStatus.BAD_REQUEST.value());
-        response.put("errors", errors);
+        response.put("error", errors);
 
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }

@@ -46,11 +46,17 @@ public class User implements UserDetails {
     @JsonIgnore()
     private boolean enabled = false;
 
+    private String deliveryAddress;
 
-    public User(String username, String email, String password) {
+    private String profileImage;
+
+
+    public User(String username, String email, String password, String deliveryAddress, String profileImage) {
         this.username = username;
         this.email = email;
         this.password = password;
+        this.deliveryAddress = deliveryAddress;
+        this.profileImage = profileImage;
     }
 
     @Override

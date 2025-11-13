@@ -20,4 +20,10 @@ public class RegisterUserDto {
     @NotBlank(message = "Username is required")
     private String username;
 
+    @NotBlank(message = "Delivery Address is required")
+    private String deliveryAddress;
+
+
+    private String profileImage;
+
 }
