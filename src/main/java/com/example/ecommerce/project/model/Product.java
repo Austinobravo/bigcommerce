@@ -17,7 +17,6 @@ import java.util.List;
 @NoArgsConstructor
 @Getter
 @Setter
-
 public class Product {
 
     @Id
@@ -35,30 +34,47 @@ public class Product {
 
     private String description;
 
+    /** EMBEDDED PRODUCT OPTIONS */
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ProductOption> options;
 
-    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+
+    /** EMBEDDED PRICE RANGE */
+    @Embedded
     private PriceRange priceRange;
 
     private String featuredImage;
 
-    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
+    /** IMAGE URLs stored in a join table */
+    @ElementCollection
+    @CollectionTable(name = "product_images", joinColumns = @JoinColumn(name = "product_id"))
+    @Column(name = "image_url")
     private List<String> images;
 
+    /** EMBEDDED VARIANTS */
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ProductVariant> variants;
+
+
+    /** MANY-TO-MANY TAGS (REUSABLE) */
+    @ManyToMany
+    @JoinTable(
+            name = "product_tags",
+            joinColumns = @JoinColumn(name = "product_id"),
+            inverseJoinColumns = @JoinColumn(name = "tag_id")
+    )
     private List<Tags> tags;
 
-    @JsonIgnore()
+    @JsonIgnore
     private boolean isDeleted;
 
-    @JsonIgnore()
+    @JsonIgnore
     private LocalDateTime deletedAt;
 
     @CreatedDate
     private LocalDateTime createdAt;
 
-    @JsonIgnore()
+    @JsonIgnore
     @LastModifiedDate
     private Instant updatedAt;
 }

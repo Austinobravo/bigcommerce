@@ -1,22 +1,23 @@
 package com.example.ecommerce.project.model;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
-@Setter
 @Getter
+@Setter
+@Entity
+@Table(name = "tags")
 public class Tags {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(updatable = false, nullable = false)
+    @Column(updatable = false, unique = true)
     private String id;
 
-    private String name;
-
+    @Column(nullable = false, unique = true)
     private String slug;
+
+    @Column(nullable = false)
+    private String name;
 }

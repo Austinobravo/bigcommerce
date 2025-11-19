@@ -1,20 +1,18 @@
 package com.example.ecommerce.project.model;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.util.List;
 
+@Entity
+@Table(name = "product_variant")
 @Getter
 @Setter
 public class ProductVariant {
 
     @Id
-    @Column(updatable = false,nullable = false)
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
 
@@ -22,7 +20,18 @@ public class ProductVariant {
 
     private String title;
 
+    @Embedded
+    @AttributeOverrides({
+            @AttributeOverride(name = "amount", column = @Column(name = "variant_amount")),
+            @AttributeOverride(name = "currencyCode", column = @Column(name = "variant_currency"))
+    })
     private Price price;
 
+    @ElementCollection
+    @CollectionTable(name = "variant_options", joinColumns = @JoinColumn(name = "variant_id"))
     private List<SelectedOption> options;
+
+    @ManyToOne
+    @JoinColumn(name = "product_id")
+    private Product product;
 }

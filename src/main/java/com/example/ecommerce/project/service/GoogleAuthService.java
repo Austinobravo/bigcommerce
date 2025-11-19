@@ -25,7 +25,7 @@ import java.util.Collections;
 public class GoogleAuthService {
 
     @Value("${google.client-id}")
-    private final String googleClientId;
+    private String googleClientId;
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;

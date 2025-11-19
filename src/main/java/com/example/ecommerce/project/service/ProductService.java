@@ -24,12 +24,11 @@ import java.util.Map;
 import java.util.Optional;
 
 @Service
-@AllArgsConstructor
 @RequiredArgsConstructor
 public class ProductService {
 
     private final ProductRepository productRepository;
-    private Cloudinary cloudinary;
+    private final Cloudinary cloudinary;
 
     public List<Product> getAllProducts(String title, Boolean availableForSale, String tag, String minPrice, String maxPrice){
         List<Product> allProducts = (List<Product>) productRepository.findAll();
@@ -157,8 +156,8 @@ public class ProductService {
         maxPrice.setAmount(input.getMaxVariantPrice().getAmount());
         maxPrice.setCurrencyCode(input.getMaxVariantPrice().getCurrencyCode());
 
-        priceRange.setMinVariantPrice(maxPrice);
-        priceRange.setMaxVariantPrice(minPrice);
+        priceRange.setMinVariantPrice(minPrice);
+        priceRange.setMaxVariantPrice(maxPrice);
 
         return priceRange;
 
