@@ -1,5 +1,6 @@
 package com.example.ecommerce.project.controller;
 
+import com.example.ecommerce.project.dto.GoogleLoginDto;
 import com.example.ecommerce.project.dto.LoginUserDto;
 import com.example.ecommerce.project.dto.RegisterUserDto;
 import com.example.ecommerce.project.dto.VerifyUserDto;
@@ -8,6 +9,7 @@ import com.example.ecommerce.project.model.User;
 import com.example.ecommerce.project.repository.RevokedTokenRepository;
 import com.example.ecommerce.project.responses.LoginResponse;
 import com.example.ecommerce.project.service.AuthenticationService;
+import com.example.ecommerce.project.service.GoogleAuthService;
 import com.example.ecommerce.project.service.JwtService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
@@ -22,12 +24,14 @@ public class AuthenticationController {
     private final JwtService jwtService;
     private  final AuthenticationService authenticationService;
     private final RevokedTokenRepository revokedTokenRepository;
+    private final GoogleAuthService googleAuthService;
 
 
-    public AuthenticationController(JwtService jwtService, AuthenticationService authenticationService, RevokedTokenRepository revokedTokenRepository) {
+    public AuthenticationController(JwtService jwtService, AuthenticationService authenticationService, RevokedTokenRepository revokedTokenRepository, GoogleAuthService googleAuthService) {
         this.jwtService = jwtService;
         this.authenticationService = authenticationService;
         this.revokedTokenRepository = revokedTokenRepository;
+        this.googleAuthService = googleAuthService;
     }
 
 
@@ -42,6 +46,12 @@ public class AuthenticationController {
         User authenticateUser = authenticationService.authenticate(loginUserDto);
         String jwtToken = jwtService.generateToken(authenticateUser);
         LoginResponse loginResponse = new LoginResponse(jwtToken, jwtService.getExpirationTime());
+        return ResponseEntity.ok(loginResponse);
+    }
+
+    @PostMapping("/google/login")
+    public ResponseEntity<LoginResponse> googleLogin(@Valid @RequestBody GoogleLoginDto googleLoginDto){
+        LoginResponse loginResponse = googleAuthService.verifyGoogleToken(googleLoginDto.getIdToken());
         return ResponseEntity.ok(loginResponse);
     }
 

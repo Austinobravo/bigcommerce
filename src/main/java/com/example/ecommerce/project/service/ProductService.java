@@ -50,6 +50,10 @@ public class ProductService {
                 }).toList();
     }
 
+    public Optional<Product> getUniqueProduct(String identifier) {
+        return productRepository.findBySlug(identifier).or(() -> productRepository.findById(identifier));
+    }
+
     public String generateUniqueSlug(String productTitle){
         String baseSlug = productTitle.trim().toLowerCase().replaceAll("[^a-z0-9\\s-]","").replaceAll("\\s+", "-");
 

@@ -36,6 +36,9 @@ public class User implements UserDetails {
     private String password;
 
     @JsonIgnore
+    private AuthProvider authProvider;
+
+    @JsonIgnore
     @Column(name = "verification_code")
     private String verificationCode;
 

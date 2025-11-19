@@ -48,7 +48,7 @@ public class ProductController {
         }
     }
 
-    @PatchMapping(value = "/product/update/${productId}", consumes = {"multipart/form-data"})
+    @PatchMapping(value = "/product/update/{productId}", consumes = {"multipart/form-data"})
     private ResponseEntity<?> updateProduct(@PathVariable String productId, @ModelAttribute UpdateProductDto input){
         try{
             Product product = productService.updateProduct(productId, input);
@@ -58,6 +58,12 @@ public class ProductController {
             return ResponseEntity.badRequest().body(e.getMessage());
 
         }
+    }
+
+    @GetMapping("/product/{productId}")
+    private ResponseEntity<?> getUniqueProduct(@PathVariable String productId){
+        if(productId != null) throw new IllegalArgumentException("Please provide an identifier");
+        return ResponseEntity.ok(productService.getUniqueProduct(productId));
     }
 
 }
